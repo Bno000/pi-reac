@@ -1,0 +1,17 @@
+# /etc/systemd/system/reac-gadget.service
+# Brings up the two 20-ch UAC2 functions at boot.
+# Install: sudo cp reac-uac2-gadget.sh /usr/local/sbin/ && sudo chmod +x /usr/local/sbin/reac-uac2-gadget.sh
+#          sudo cp reac-gadget.service /etc/systemd/system/ && sudo systemctl enable --now reac-gadget
+[Unit]
+Description=REAC 40ch USB Audio gadget
+After=sys-kernel-config.mount systemd-modules-load.service
+Requires=sys-kernel-config.mount
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/sbin/reac-uac2-gadget.sh
+ExecStop=/bin/sh -c 'G=/sys/kernel/config/usb_gadget/reac; echo "" > $G/UDC; rm -f $G/configs/c.1/uac2.*; rmdir $G/configs/c.1/strings/0x409 $G/configs/c.1 $G/functions/uac2.* $G/strings/0x409 $G'
+
+[Install]
+WantedBy=multi-user.target
